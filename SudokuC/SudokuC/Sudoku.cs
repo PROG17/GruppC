@@ -14,6 +14,7 @@ namespace SudokuC
 
         public List<char> checkedNumbers = new List<char>(); // Här deklarerar vi en lista av typen char som heter "checkedNumbers".
 
+        public List<char> solutions = new List<char>();
 
         //Metod med samma namn som klassen(Konstruktor) som skapar en tvådimensionell Array("sudokuBoard") av en string som den hämtar in via en inparameter.
         public Sudoku(string board)
@@ -34,31 +35,37 @@ namespace SudokuC
         //Denna metod ska lösa vår Sudoku och den loopar igenom varje element i vår tvådimensionella array av char som heter "sudokuBoard"
         public void Solve()
         {
-            for (int r = 0; r < 9; r++)
+            while (Methods.CheckIfSolved(sudokuBoard))
             {
-                for (int c = 0; c < 9; c++)
-                {
-                    if (sudokuBoard[r,c] != '0')
-                    {
-                        checkedNumbers = Methods.CheckRow(r, sudokuBoard, checkedNumbers);
-                        checkedNumbers = Methods.CheckColumn(c, sudokuBoard, checkedNumbers);
-                        checkedNumbers = Methods.CheckBlock(r, c, sudokuBoard, checkedNumbers);
 
-                        for (int i = 0; i < checkedNumbers.Count; i++)
+                for (int r = 0; r < 9; r++)
+                {
+                    for (int c = 0; c < 9; c++)
+                    {
+                        if (sudokuBoard[r, c] != '0')
                         {
-                            if (!checkedNumbers.Contains('1'))
+                            checkedNumbers = Methods.CheckRow(r, sudokuBoard, checkedNumbers);
+                            checkedNumbers = Methods.CheckColumn(c, sudokuBoard, checkedNumbers);
+                            checkedNumbers = Methods.CheckBlock(r, c, sudokuBoard, checkedNumbers);
+
+                            for (int i = 49; i <= 57; i++)
                             {
-                                r = '1';
+                                if (!checkedNumbers.Contains((char)i))
+                                {
+                                    solutions.Add((char)i);
+                                }
                             }
                         }
 
+                        if (solutions.Count == 1)
+                        {
+                            sudokuBoard[r, c] = solutions.ElementAt<char>(0);
+                        }
                     }
                 }
             }
 
         }
-
-
 
     }
 }
