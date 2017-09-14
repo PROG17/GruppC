@@ -8,27 +8,30 @@ namespace SudokuC
 {
     public class Sudoku
     {
-        public char[,] sudokuBoard = new char[9, 9];
-        int count1 = 0;
-        public List<char> checkedNumbers = new List<char>();
+        public char[,] sudokuBoard = new char[9, 9]; //Här deklarerar vi en en tvådimensionell array av typen char och anger storleken på denna.
+
+        int count1 = 0; //Här skapar vi en variabel av typen int som vi använder som en räknare
+
+        public List<char> checkedNumbers = new List<char>(); // Här deklarerar vi en lista av typen char som heter "checkedNumbers".
 
 
-        //Metod(Konstruktor) som skapar två dimitionell Array(sudokuBoard) av en string.
+        //Metod med samma namn som klassen(Konstruktor) som skapar en tvådimensionell Array("sudokuBoard") av en string som den hämtar in via en inparameter.
         public Sudoku(string board)
         {
-            for (int r = 0; r < 9; r++)
+            for (int r = 0; r < 9; r++) //med "r" räknar vi antal rows(rader), 9 rader.
             {
-                for (int c = 0; c < 9; c++)
+                for (int c = 0; c < 9; c++) // med c räknar vi antal columns(kolumner), 9 kolumner per rad).
                 {
-                    sudokuBoard[r, c] = (board[count1]);
-                    count1++;
+                    sudokuBoard[r, c] = (board[count1]); //Här lägger till värde på respektive element i vår tvådimensionella char arrray och värdet hämtar vi från vår string som angivits som inparameter.
+
+                    count1++; //Här ökar vi värdet på vår räknare med 1 för att hämta nästa char i vår sträng för varje gång som denna loop körs.
                 }
 
             }
         }
 
 
-
+        //Denna metod ska lösa vår Sudoku och den loopar igenom varje element i vår tvådimensionella array av char som heter "sudokuBoard"
         //public void Solve()
         //{
 
