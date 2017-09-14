@@ -22,14 +22,12 @@ namespace SudokuC
                 {
                     sudokuBoard[r, c] = (board[count1]);
                     count1++;
-
-                    Console.WriteLine(sudokuBoard[r, c]);
                 }
 
             }
         }
 
-        
+
 
         //public void Solve()
         //{
