@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace SudokuC
 {
-    class Sudoku
+    public class Sudoku
     {
         public char[,] sudokuBoard = new char[9, 9];
         int count1 = 0;
-        List<char> checkedNumbers = new List<char>();
+        public List<char> checkedNumbers = new List<char>();
 
 
         //Metod(Konstruktor) som skapar två dimitionell Array(sudokuBoard) av en string.
@@ -27,13 +27,17 @@ namespace SudokuC
                 }
 
             }
-
         }
 
-        public void Solve()
-        {
+        
 
-        }
+        //public void Solve()
+        //{
+
+
+        //}
+
+
 
     }
 }
