@@ -18,7 +18,7 @@ namespace SudokuC
                     checkList.Add(boardArray[r, c]);
                 }
             }
-            return checkList;
+            return checkList; //Returnerar lista
 
         }
 
@@ -32,7 +32,7 @@ namespace SudokuC
                     checkList.Add(extraArray[r, c]);
                 }
             }
-            return checkList;
+            return checkList; //Returnerar lista
 
         }
 
@@ -55,7 +55,7 @@ namespace SudokuC
                 }
                 
             }
-            return checkList;
+            return checkList; //Returnerar lista
 
         }
 
