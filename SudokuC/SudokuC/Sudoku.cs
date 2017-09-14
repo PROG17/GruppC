@@ -32,11 +32,31 @@ namespace SudokuC
 
 
         //Denna metod ska lösa vår Sudoku och den loopar igenom varje element i vår tvådimensionella array av char som heter "sudokuBoard"
-        //public void Solve()
-        //{
+        public void Solve()
+        {
+            for (int r = 0; r < 9; r++)
+            {
+                for (int c = 0; c < 9; c++)
+                {
+                    if (sudokuBoard[r,c] != '0')
+                    {
+                        checkedNumbers = Methods.CheckRow(r, sudokuBoard, checkedNumbers);
+                        checkedNumbers = Methods.CheckColumn(c, sudokuBoard, checkedNumbers);
+                        checkedNumbers = Methods.CheckBlock(r, c, sudokuBoard, checkedNumbers);
 
+                        for (int i = 0; i < checkedNumbers.Count; i++)
+                        {
+                            if (!checkedNumbers.Contains('1'))
+                            {
+                                r = '1';
+                            }
+                        }
 
-        //}
+                    }
+                }
+            }
+
+        }
 
 
 
