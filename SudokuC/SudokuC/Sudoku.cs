@@ -32,26 +32,28 @@ namespace SudokuC
         }
 
 
-        //Denna metod ska lösa vår Sudoku och den loopar igenom varje element i vår tvådimensionella array av char som heter "sudokuBoard"
+        //Denna metod ska lösa vår Sudoku och den loopar igenom varje element i vår tvådimensionella array av char som heter "sudokuBoard".
         public void Solve()
         {
-            for (int r = 0; r < 9; r++)
+            while (Methods.CheckIfSolved(sudokuBoard))
             {
-                for (int c = 0; c < 9; c++)
+                for (int r = 0; r < 9; r++)
                 {
-                    if (sudokuBoard[r,c] != '0')
+                    for (int c = 0; c < 9; c++)
                     {
-                        checkedNumbers = Methods.CheckRow(r, sudokuBoard, checkedNumbers);
-                        checkedNumbers = Methods.CheckColumn(c, sudokuBoard, checkedNumbers);
-                        checkedNumbers = Methods.CheckBlock(r, c, sudokuBoard, checkedNumbers);
-
-                        for (int i = 0; i < checkedNumbers.Count; i++)
+                        if (sudokuBoard[r, c] != '0')
                         {
-                            if (!checkedNumbers.Contains('1'))
-                            {
-                                r = '1';
-                            }
+                            checkedNumbers = Methods.CheckRow(r, sudokuBoard, checkedNumbers);
+                            checkedNumbers = Methods.CheckColumn(c, sudokuBoard, checkedNumbers);
+                            checkedNumbers = Methods.CheckBlock(r, c, sudokuBoard, checkedNumbers);
 
+                            for (int i = 47; i <= 57; i++)
+                            {
+                                if (!checkedNumbers.Contains((char)i))
+                                {
+                                    solutions.Add((char)i);
+                                }
+                            }
                         }
 
                         if (solutions.Count == 1)
@@ -59,16 +61,8 @@ namespace SudokuC
                             sudokuBoard[r, c] = solutions.ElementAt<char>(0);
                         }
                     }
-
-                    if (solutions.Count == 1)
-                    {
-                        sudokuBoard[r, c] = solutions.ElementAt<char>(0);
-                    }
-
-
-
-
-
-
+                }
+            }
+        }
     }
 }
