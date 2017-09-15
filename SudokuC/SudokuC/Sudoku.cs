@@ -15,6 +15,7 @@ namespace SudokuC
         public List<char> checkedNumbers = new List<char>(); // Här deklarerar vi en lista av typen char som heter "checkedNumbers".
 
         public List<char> solutions = new List<char>();
+        
 
         //Metod med samma namn som klassen(Konstruktor) som skapar en tvådimensionell Array("sudokuBoard") av en string som den hämtar in via en inparameter.
         public Sudoku(string board)
@@ -31,23 +32,26 @@ namespace SudokuC
             }
         }
 
-
         //Denna metod ska lösa vår Sudoku och den loopar igenom varje element i vår tvådimensionella array av char som heter "sudokuBoard".
         public void Solve()
         {
-            while (Methods.CheckIfSolved(sudokuBoard))
+            bool soluble = true;
+
+            while (Methods.CheckIfSolved(sudokuBoard) && soluble)
             {
+                soluble = false;
                 for (int r = 0; r < 9; r++)
                 {
                     for (int c = 0; c < 9; c++)
                     {
-                        if (sudokuBoard[r, c] != '0')
+                        if (sudokuBoard[r, c] == '0')
                         {
+
                             checkedNumbers = Methods.CheckRow(r, sudokuBoard, checkedNumbers);
                             checkedNumbers = Methods.CheckColumn(c, sudokuBoard, checkedNumbers);
                             checkedNumbers = Methods.CheckBlock(r, c, sudokuBoard, checkedNumbers);
 
-                            for (int i = 47; i <= 57; i++)
+                            for (int i = 49; i <= 57; i++)
                             {
                                 if (!checkedNumbers.Contains((char)i))
                                 {
@@ -58,10 +62,19 @@ namespace SudokuC
 
                         if (solutions.Count == 1)
                         {
-                            sudokuBoard[r, c] = solutions.ElementAt<char>(0);
+                            sudokuBoard[r, c] = solutions[0];
+                            soluble = true;
                         }
+
+                        checkedNumbers.Clear();
+                        solutions.Clear();
                     }
                 }
+            }
+
+            if (!soluble)
+            {
+                Console.WriteLine("Kan ej lösa, ger upp!");
             }
         }
     }

@@ -8,6 +8,7 @@ namespace SudokuC
 {
     class Methods
     {
+
         //Denna metod loopar igenom alla 9 kolumner i en specefik rad och lägger till siffror(bortsett från 0) som den hittar i en lista som den sedan returnerar.
         public static List<char> CheckRow(int r, Char[,] boardArray, List<char> checkList)
         {
@@ -39,7 +40,7 @@ namespace SudokuC
         //Denna metod loopar igenom alla element som ligger i en specifik block och lägger till siffror(bortsett från 0) som den hittar i en lista som den sedan returnerar.
         public static List<char> CheckBlock(int R, int C, Char[,] boardArray, List<char> checkList)
         {
-            //Här nedan använder vi en formel som låter oss att hitta index till den översta eller vänstra elementet i respektive block.
+            //Här nedan använder vi en formel som låter oss att hitta index till den översta och vänstra elementet i respektive block.
             R = (R / 3) * 3;
             C = (C / 3) * 3;
 
@@ -50,7 +51,7 @@ namespace SudokuC
                 {
                     if ((boardArray[R + r, C + c] != '0') && (!checkList.Contains(boardArray[r, c]))) //Här kontrollerar vi att det inte är en nolla.
                     {
-                        checkList.Add(boardArray[r, c]);
+                        checkList.Add(boardArray[R + r, C + c]);
                     }
                 }
                 
@@ -58,6 +59,7 @@ namespace SudokuC
             return checkList; //Returnerar lista
 
         }
+
 
         public static bool CheckIfSolved(char[,] bordArray)
         {
@@ -73,11 +75,11 @@ namespace SudokuC
 
             if(i == 0)
             {
-                return true;
+                return false;
             }
             else
             {
-                return false;
+                return true;
             }
         }
     }
