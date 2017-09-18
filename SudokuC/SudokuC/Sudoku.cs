@@ -74,7 +74,10 @@ namespace SudokuC
 
             if (!soluble)
             {
-                Console.WriteLine("Kan ej lösa, ger upp!");
+                Console.WriteLine("Kan ej lösa, ger upp! \nHär är resultatet:");
+                Console.WriteLine();
+                Methods.PrintBoard(sudokuBoard);
+                Console.ReadLine();
             }
         }
     }
