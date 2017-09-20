@@ -10,7 +10,7 @@ namespace SudokuC
     {
         public char[,] sudokuBoard = new char[9, 9]; //Här deklarerar vi en en tvådimensionell array av typen char och anger storleken på denna.
 
-        int count1 = 0; //Här skapar vi en variabel av typen int som vi använder som en räknare
+         
 
         public List<char> checkedNumbers = new List<char>(); // Här deklarerar vi en lista av typen char som heter "checkedNumbers".
 
@@ -20,6 +20,8 @@ namespace SudokuC
         //Metod med samma namn som klassen(Konstruktor) som skapar en tvådimensionell Array("sudokuBoard") av en string som den hämtar in via en inparameter.
         public Sudoku(string board)
         {
+            int count1 = 0; //Här skapar vi en variabel av typen int som vi använder som en räknare
+
             for (int r = 0; r < 9; r++) //med "r" räknar vi antal rows(rader), 9 rader.
             {
                 for (int c = 0; c < 9; c++) // med c räknar vi antal columns(kolumner), 9 kolumner per rad).
@@ -37,7 +39,7 @@ namespace SudokuC
         {
             bool soluble = true;
 
-            while (Methods.CheckIfSolved(sudokuBoard) && soluble)
+            while (CheckIfSolved(sudokuBoard) && soluble)
             {
                 soluble = false;
                 for (int r = 0; r < 9; r++)
@@ -47,9 +49,9 @@ namespace SudokuC
                         if (sudokuBoard[r, c] == '0')
                         {
 
-                            checkedNumbers = Methods.CheckRow(r, sudokuBoard, checkedNumbers);
-                            checkedNumbers = Methods.CheckColumn(c, sudokuBoard, checkedNumbers);
-                            checkedNumbers = Methods.CheckBlock(r, c, sudokuBoard, checkedNumbers);
+                            checkedNumbers = CheckRow(r, sudokuBoard, checkedNumbers);
+                            checkedNumbers = CheckColumn(c, sudokuBoard, checkedNumbers);
+                            checkedNumbers = CheckBlock(r, c, sudokuBoard, checkedNumbers);
 
                             for (int i = 49; i <= 57; i++)
                             {
@@ -65,6 +67,10 @@ namespace SudokuC
                             sudokuBoard[r, c] = solutions[0];
                             soluble = true;
                         }
+                        else if (solutions.Count <= 3)
+                        {
+                            AlternativeBoard();
+                        }
 
                         checkedNumbers.Clear();
                         solutions.Clear();
@@ -76,9 +82,91 @@ namespace SudokuC
             {
                 Console.WriteLine("Kan ej lösa, ger upp! \nHär är resultatet:");
                 Console.WriteLine();
-                Methods.PrintBoard(sudokuBoard);
+                PrintBoard(sudokuBoard);
                 Console.ReadLine();
             }
         }
+        public static List<char> CheckRow(int r, Char[,] boardArray, List<char> checkList)
+        {
+            for (int c = 0; c < 9; c++)
+            {
+                if (boardArray[r, c] != '0') //Här kontrollerar vi att det inte är en nolla.
+                {
+                    checkList.Add(boardArray[r, c]);
+                }
+            }
+            return checkList; //Returnerar lista
+
+        }
+        public static List<char> CheckColumn(int c, Char[,] boardArray, List<char> checkList)
+        {
+            for (int r = 0; r < 9; r++)
+            {
+                if ((boardArray[r, c] != '0') && (!checkList.Contains(boardArray[r, c]))) //Här kontrollerar vi att det inte är en nolla.
+                {
+                    checkList.Add(boardArray[r, c]);
+                }
+            }
+            return checkList; //Returnerar lista
+
+        }
+        public static List<char> CheckBlock(int R, int C, Char[,] boardArray, List<char> checkList)
+        {
+            //Här nedan använder vi en formel som låter oss att hitta index till den översta och vänstra elementet i respektive block.
+            R = (R / 3) * 3;
+            C = (C / 3) * 3;
+
+            //Här loopar vi igenom respektive block och lägger till siffror(bortsett från 0) som den hittar i en lista som den sedan returnerar.
+            for (int r = 0; r < 3; r++)
+            {
+                for (int c = 0; c < 3; c++)
+                {
+                    if ((boardArray[R + r, C + c] != '0') && (!checkList.Contains(boardArray[r, c]))) //Här kontrollerar vi att det inte är en nolla.
+                    {
+                        checkList.Add(boardArray[R + r, C + c]);
+                    }
+                }
+
+            }
+            return checkList; //Returnerar lista
+
+        }
+        public static bool CheckIfSolved(char[,] bordArray)
+        {
+            int i = 0;
+
+            foreach (var item in bordArray)
+            {
+                if (item == '0')
+                {
+                    i++;
+                }
+            }
+
+            if (i == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        public static void PrintBoard(char[,] bordArray)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                for (int col = 0; col < 9; col++)
+                {
+                    Console.Write(bordArray[row, col] + " ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        //private bool AlternativeBoard(List<char> tryvaluesList)
+        //{
+            
+        //}
     }
 }
