@@ -46,9 +46,12 @@ namespace SudokuC
                 {
                     for (int c = 0; c < 9; c++)
                     {
+                        int row = r;
+                        int col = c;
+
                         if (sudokuBoard[r, c] == '0')
                         {
-
+                            
                             checkedNumbers = CheckRow(r, sudokuBoard, checkedNumbers);
                             checkedNumbers = CheckColumn(c, sudokuBoard, checkedNumbers);
                             checkedNumbers = CheckBlock(r, c, sudokuBoard, checkedNumbers);
@@ -69,7 +72,8 @@ namespace SudokuC
                         }
                         else if (solutions.Count <= 3)
                         {
-                            AlternativeBoard();
+                            AlternativeBoard(solutions, row, col); 
+                     
                         }
 
                         checkedNumbers.Clear();
@@ -164,9 +168,27 @@ namespace SudokuC
             }
         }
 
-        //private bool AlternativeBoard(List<char> tryvaluesList)
-        //{
-            
-        //}
+        private List<char> AlternativeBoard(List<char> tryvaluesList, int row, int col)
+        {
+            //Sudoku guess = new Sudoku(AlternativeBoardString(AlternativeBoard));
+
+                      /*Skapa metod för att lägga in en ny siffra i sudokun, från tryvaluesList.
+                       * denna görs om till en sträng som körs igenom solve-metoden.
+                       * om solve-metoden inte hittar någon ny lösning ska programmet gå tillbaka till denna metod
+                       * och lägga till en ny gissning från listan
+                      */
+        }
+
+        private string AlternativeBoardString(List<char> AlternativeBoard)
+        {
+            string AlternativeString = "";
+
+            foreach (var item in AlternativeBoard)
+            {
+                AlternativeString += item; //för att lägga ihop varje del i char-Listan till en enda sträng
+            }
+
+            return AlternativeString;
+        }
     }
 }
