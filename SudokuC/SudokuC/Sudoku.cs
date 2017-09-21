@@ -70,10 +70,10 @@ namespace SudokuC
                             sudokuBoard[r, c] = solutions[0];
                             soluble = true;
                         }
-                        else if (solutions.Count <= 3)
+                        else if (solutions.Count >= 1)
                         {
-                            AlternativeBoard(solutions, row, col); 
-                     
+                            AlternativeBoard(solutions, row, col);
+
                         }
 
                         checkedNumbers.Clear();
@@ -84,10 +84,10 @@ namespace SudokuC
 
             if (!soluble)
             {
-                Console.WriteLine("Kan ej lösa, ger upp! \nHär är resultatet:");
-                Console.WriteLine();
-                PrintBoard(sudokuBoard);
-                Console.ReadLine();
+                //Console.WriteLine("Kan ej lösa, ger upp! \nHär är resultatet:");
+                //Console.WriteLine();
+                //PrintBoard(sudokuBoard);
+                //Console.ReadLine();
             }
         }
         public static List<char> CheckRow(int r, Char[,] boardArray, List<char> checkList)
@@ -168,10 +168,24 @@ namespace SudokuC
             }
         }
 
-        private List<char> AlternativeBoard(List<char> tryvaluesList, int row, int col)
+        private string AlternativeBoard(List<char> tryvaluesList, int row, int col)
         {
             //Sudoku guess = new Sudoku(AlternativeBoardString(AlternativeBoard));
+            string guess = "";
 
+           foreach(char item in tryvaluesList)
+            {
+                sudokuBoard[row, col] = item;
+
+                foreach(char item2 in sudokuBoard)
+                {
+                    guess += item2.ToString();
+                }
+            }
+            Sudoku game2 = new Sudoku(guess);
+            return guess;
+            
+            
                       /*Skapa metod för att lägga in en ny siffra i sudokun, från tryvaluesList.
                        * denna görs om till en sträng som körs igenom solve-metoden.
                        * om solve-metoden inte hittar någon ny lösning ska programmet gå tillbaka till denna metod
