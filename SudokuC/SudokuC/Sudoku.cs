@@ -125,7 +125,7 @@ namespace SudokuC
             {
                 for (int c = 0; c < 3; c++)
                 {
-                    if ((boardArray[R + r, C + c] != '0') && (!checkList.Contains(boardArray[r, c]))) //Här kontrollerar vi att det inte är en nolla.
+                    if ((boardArray[R + r, C + c] != '0') && (!checkList.Contains(boardArray[R + r,C + c]))) //Här kontrollerar vi att det inte är en nolla.
                     {
                         checkList.Add(boardArray[R + r, C + c]);
                     }
