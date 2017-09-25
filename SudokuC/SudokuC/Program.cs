@@ -21,7 +21,6 @@ namespace SudokuC
                                      "800203009" +
                                      "005010300");
 
-
             
             game.Solve();
 

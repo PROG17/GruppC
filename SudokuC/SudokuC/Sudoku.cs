@@ -9,13 +9,10 @@ namespace SudokuC
     public class Sudoku
     {
         public char[,] sudokuBoard = new char[9, 9]; //Här deklarerar vi en en tvådimensionell array av typen char och anger storleken på denna.
-
-         
-
+        
         public List<char> checkedNumbers = new List<char>(); // Här deklarerar vi en lista av typen char som heter "checkedNumbers".
 
         public List<char> solutions = new List<char>();
-        
 
         //Metod med samma namn som klassen(Konstruktor) som skapar en tvådimensionell Array("sudokuBoard") av en string som den hämtar in via en inparameter.
         public Sudoku(string board)
@@ -37,21 +34,19 @@ namespace SudokuC
         //Denna metod ska lösa vår Sudoku och den loopar igenom varje element i vår tvådimensionella array av char som heter "sudokuBoard".
         public void Solve()
         {
-            bool soluble = true;
+            bool solvable = true;
 
-            while (CheckIfSolved(sudokuBoard) && soluble)
+            while (CheckIfSolved(sudokuBoard) && solvable)
             {
-                soluble = false;
+                solvable = false;
+
                 for (int r = 0; r < 9; r++)
                 {
                     for (int c = 0; c < 9; c++)
                     {
-                        int row = r;
-                        int col = c;
 
                         if (sudokuBoard[r, c] == '0')
                         {
-                            
                             checkedNumbers = CheckRow(r, sudokuBoard, checkedNumbers);
                             checkedNumbers = CheckColumn(c, sudokuBoard, checkedNumbers);
                             checkedNumbers = CheckBlock(r, c, sudokuBoard, checkedNumbers);
@@ -68,12 +63,11 @@ namespace SudokuC
                         if (solutions.Count == 1)
                         {
                             sudokuBoard[r, c] = solutions[0];
-                            soluble = true;
+                            solvable = true;
                         }
                         else if (solutions.Count >= 1)
                         {
-                            AlternativeBoard(solutions, row, col);
-
+                            AlternativeBoard(solutions, r, c);
                         }
 
                         checkedNumbers.Clear();
@@ -82,14 +76,15 @@ namespace SudokuC
                 }
             }
 
-            if (!soluble)
+            if (!solvable)
             {
-                //Console.WriteLine("Kan ej lösa, ger upp! \nHär är resultatet:");
-                //Console.WriteLine();
-                //PrintBoard(sudokuBoard);
-                //Console.ReadLine();
+                Console.WriteLine("Kan ej lösa, ger upp! \nHär är resultatet:");
+                Console.WriteLine();
+                PrintBoard(sudokuBoard);
+                Console.ReadLine();
             }
         }
+
         public static List<char> CheckRow(int r, Char[,] boardArray, List<char> checkList)
         {
             for (int c = 0; c < 9; c++)
@@ -102,6 +97,7 @@ namespace SudokuC
             return checkList; //Returnerar lista
 
         }
+
         public static List<char> CheckColumn(int c, Char[,] boardArray, List<char> checkList)
         {
             for (int r = 0; r < 9; r++)
@@ -114,6 +110,7 @@ namespace SudokuC
             return checkList; //Returnerar lista
 
         }
+
         public static List<char> CheckBlock(int R, int C, Char[,] boardArray, List<char> checkList)
         {
             //Här nedan använder vi en formel som låter oss att hitta index till den översta och vänstra elementet i respektive block.
@@ -135,6 +132,7 @@ namespace SudokuC
             return checkList; //Returnerar lista
 
         }
+
         public static bool CheckIfSolved(char[,] bordArray)
         {
             int i = 0;
@@ -156,6 +154,7 @@ namespace SudokuC
                 return true;
             }
         }
+
         public static void PrintBoard(char[,] bordArray)
         {
             for (int row = 0; row < 9; row++)
