@@ -122,9 +122,9 @@ namespace SudokuC
             return ValuesInColumn;
         }
 
-        private List<char> CheckBlock(int R, int C)
+        private List<int> GetNumbersInBoxint (int R, int C)
         {
-            List<char> ValuesInBlock = new List<char>();
+            List<char> numbersInBox = new List<char>();
 
             R = (R / 3) * 3;
             C = (C / 3) * 3;
@@ -133,13 +133,14 @@ namespace SudokuC
             {
                 for (int c = 0; c < 3; c++)
                 {
-                    if ((sudokuBoard[R + r, C + c] != '0') && (!ValuesInBlock.Contains(sudokuBoard[R + r, C + c])))
+                    int values = sudokuBoard[R,C];
+                    if ((sudokuBoard[R + r, C + c] != '0') && (!numbersInBox.Contains(sudokuBoard[R + r, C + c])))
                     {
-                        ValuesInBlock.Add(sudokuBoard[R + r, C + c]);
+                        numbersInBox.Add(sudokuBoard[r ,c]);
                     }
                 }
             }
-            return ValuesInBlock;
+            return numbersInBox;
         }
 
         private bool CheckIfSolved()
@@ -159,8 +160,6 @@ namespace SudokuC
             List<char> rowValue = CheckRow(r);
             List<char> colValue = CheckColumn(c);
             List<char> boxValue = CheckBlock(r, c);
-
-            
 
 
             List<char> solutions = new List<char>();
