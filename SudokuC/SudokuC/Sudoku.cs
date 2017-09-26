@@ -2,31 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SudokuC
 {
     public class Sudoku
     {
-        public char[,] sudokuBoard = new char[9, 9]; //Här deklarerar vi en en tvådimensionell array av typen char och anger storleken på denna.
+        public char[,] sudokuBoard; //Här deklarerar vi en en tvådimensionell array av typen char och anger storleken på denna.
 
-         
 
-        public List<char> checkedNumbers = new List<char>(); // Här deklarerar vi en lista av typen char som heter "checkedNumbers".
-
-        public List<char> solutions = new List<char>();
-        
 
         //Metod med samma namn som klassen(Konstruktor) som skapar en tvådimensionell Array("sudokuBoard") av en string som den hämtar in via en inparameter.
         public Sudoku(string board)
         {
+            sudokuBoard = new char[9, 9];
+
             int count1 = 0; //Här skapar vi en variabel av typen int som vi använder som en räknare
 
             for (int r = 0; r < 9; r++) //med "r" räknar vi antal rows(rader), 9 rader.
             {
                 for (int c = 0; c < 9; c++) // med c räknar vi antal columns(kolumner), 9 kolumner per rad).
                 {
-                    sudokuBoard[r, c] = (board[count1]); //Här lägger till värde på respektive element i vår tvådimensionella char arrray och värdet hämtar vi från vår string som angivits som inparameter.
+                    this.sudokuBoard[r, c] = (board[count1]); //Här lägger till värde på respektive element i vår tvådimensionella char arrray och värdet hämtar vi från vår string som angivits som inparameter.
 
                     count1++; //Här ökar vi värdet på vår räknare med 1 för att hämta nästa char i vår sträng för varje gång som denna loop körs.
                 }
@@ -34,175 +32,214 @@ namespace SudokuC
             }
         }
 
-        //Denna metod ska lösa vår Sudoku och den loopar igenom varje element i vår tvådimensionella array av char som heter "sudokuBoard".
-        public void Solve()
+        //Konstruktor som tar in en tvådimisionell array av typrn char (används vid recursionen på del 2)
+        public Sudoku(char[,] SudokuBoard)
         {
-            bool soluble = true;
+            sudokuBoard = new char[9, 9];
 
-            while (CheckIfSolved(sudokuBoard) && soluble)
+            for (int r = 0; r < 9; r++)
             {
-                soluble = false;
+                for (int c = 0; c < 9; c++)
+                {
+                    this.sudokuBoard[r, c] = SudokuBoard[r, c];
+                }
+            }
+
+        }
+
+
+        
+        //Denna metod ska lösa vår Sudoku och den loopar igenom varje element i vår tvådimensionella array av char som heter "sudokuBoard".
+        internal bool Solve()
+        {
+            bool solvable;
+
+            do
+            {
+                solvable = false;
                 for (int r = 0; r < 9; r++)
                 {
                     for (int c = 0; c < 9; c++)
                     {
-                        int row = r;
-                        int col = c;
-
-                        if (sudokuBoard[r, c] == '0')
+                        if (sudokuBoard[r, c] == '0')   // Om cellen är tom
                         {
-                            
-                            checkedNumbers = CheckRow(r, sudokuBoard, checkedNumbers);
-                            checkedNumbers = CheckColumn(c, sudokuBoard, checkedNumbers);
-                            checkedNumbers = CheckBlock(r, c, sudokuBoard, checkedNumbers);
+                            List<char> possibleValues = FindSolutions(r, c);
 
-                            for (int i = 49; i <= 57; i++)
+                            if (possibleValues.Count == 1)    // Om exakt en siffra är möjlig i cellen 
                             {
-                                if (!checkedNumbers.Contains((char)i))
-                                {
-                                    solutions.Add((char)i);
-                                }
+                                // Skriv in den enda möjliga siffran i cellen
+                                sudokuBoard[r, c] = possibleValues[0];
+                                solvable = true;
                             }
                         }
-
-                        if (solutions.Count == 1)
-                        {
-                            sudokuBoard[r, c] = solutions[0];
-                            soluble = true;
-                        }
-                        else if (solutions.Count >= 1)
-                        {
-                            AlternativeBoard(solutions, row, col);
-
-                        }
-
-                        checkedNumbers.Clear();
-                        solutions.Clear();
                     }
                 }
+
+            } while (solvable); // Fortsätt i loopen om minst en siffra blev inskriven          
+
+            // Kontrollera om sudokut är löst
+            if (CheckIfSolved())
+            {
+                return true;
+
             }
 
-            if (!soluble)
-            {
-                //Console.WriteLine("Kan ej lösa, ger upp! \nHär är resultatet:");
-                //Console.WriteLine();
-                //PrintBoard(sudokuBoard);
-                //Console.ReadLine();
-            }
+            // Det gick inte att lösa sudokut med logik, så nu måste vi göra en gissning
+            // Gissa en lösning och returnera en bool som anger om gissningen gick bra          
+
+            return GuessSolution();
+
         }
-        public static List<char> CheckRow(int r, Char[,] boardArray, List<char> checkList)
+
+
+
+
+        private List<char> CheckRow(int r)
         {
+            List<char> ValuesInRow = new List<char>();
+
             for (int c = 0; c < 9; c++)
             {
-                if (boardArray[r, c] != '0') //Här kontrollerar vi att det inte är en nolla.
+                if ((sudokuBoard[r, c] != '0') && (!ValuesInRow.Contains(sudokuBoard[r, c])))
                 {
-                    checkList.Add(boardArray[r, c]);
+                    ValuesInRow.Add(sudokuBoard[r, c]);
                 }
             }
-            return checkList; //Returnerar lista
-
+            return ValuesInRow;
         }
-        public static List<char> CheckColumn(int c, Char[,] boardArray, List<char> checkList)
+
+        private List<char> CheckColumn(int c)
         {
+            List<char> ValuesInColumn = new List<char>();
+
             for (int r = 0; r < 9; r++)
             {
-                if ((boardArray[r, c] != '0') && (!checkList.Contains(boardArray[r, c]))) //Här kontrollerar vi att det inte är en nolla.
+                if ((sudokuBoard[r, c] != '0') && (!ValuesInColumn.Contains(sudokuBoard[r, c])))
                 {
-                    checkList.Add(boardArray[r, c]);
+                    ValuesInColumn.Add(sudokuBoard[r, c]);
                 }
             }
-            return checkList; //Returnerar lista
-
+            return ValuesInColumn;
         }
-        public static List<char> CheckBlock(int R, int C, Char[,] boardArray, List<char> checkList)
+
+        private List<char> CheckBlock(int R, int C)
         {
-            //Här nedan använder vi en formel som låter oss att hitta index till den översta och vänstra elementet i respektive block.
+            List<char> ValuesInBlock = new List<char>();
+
             R = (R / 3) * 3;
             C = (C / 3) * 3;
 
-            //Här loopar vi igenom respektive block och lägger till siffror(bortsett från 0) som den hittar i en lista som den sedan returnerar.
             for (int r = 0; r < 3; r++)
             {
                 for (int c = 0; c < 3; c++)
                 {
-                    if ((boardArray[R + r, C + c] != '0') && (!checkList.Contains(boardArray[r, c]))) //Här kontrollerar vi att det inte är en nolla.
+                    if ((sudokuBoard[R + r, C + c] != '0') && (!ValuesInBlock.Contains(sudokuBoard[R + r, C + c])))
                     {
-                        checkList.Add(boardArray[R + r, C + c]);
+                        ValuesInBlock.Add(sudokuBoard[R + r, C + c]);
                     }
                 }
-
             }
-            return checkList; //Returnerar lista
-
+            return ValuesInBlock;
         }
-        public static bool CheckIfSolved(char[,] bordArray)
-        {
-            int i = 0;
 
-            foreach (var item in bordArray)
+        private bool CheckIfSolved()
+        {
+            foreach (var item in sudokuBoard)
             {
                 if (item == '0')
                 {
-                    i++;
+                    return false;
                 }
             }
-
-            if (i == 0)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return true;
         }
-        public static void PrintBoard(char[,] bordArray)
+
+        private List<char> FindSolutions(int r, int c)
         {
-            for (int row = 0; row < 9; row++)
+            List<char> rowValue = CheckRow(r);
+            List<char> colValue = CheckColumn(c);
+            List<char> boxValue = CheckBlock(r, c);
+
+            
+
+
+            List<char> solutions = new List<char>();
+
+            for (char i = '1'; i <= '9'; i++)
             {
-                for (int col = 0; col < 9; col++)
+                if (!rowValue.Contains(i) && (!colValue.Contains(i) && (!boxValue.Contains(i))))
                 {
-                    Console.Write(bordArray[row, col] + " ");
+                    solutions.Add(i);
+               
+                }
+            }
+         
+            return solutions;
+        }
+
+        public void PrintBoard()
+        {
+            for (int r = 0; r < 9; r++)
+            {
+                for (int c = 0; c < 9; c++)
+                {
+                    Console.Write(sudokuBoard[r, c] + " ");
                 }
                 Console.WriteLine();
             }
         }
 
-        private string AlternativeBoard(List<char> tryvaluesList, int row, int col)
+        private bool GuessSolution()
         {
-            //Sudoku guess = new Sudoku(AlternativeBoardString(AlternativeBoard));
-            string guess = "";
-
-           foreach(char item in tryvaluesList)
+            int guessRow = 0;
+            int guessCol = 0;
+            // Leta upp nästa tomma cell, och använd sedan den tomma cellen för hitta en möjlig lösning
+            for (int r = 0; r < 9; r++)
             {
-                sudokuBoard[row, col] = item;
-
-                foreach(char item2 in sudokuBoard)
+                for (int c = 0; c < 9; c++)
                 {
-                    guess += item2.ToString();
+                    if (CheckIfSolved()) //Om det inte finns några nollor kvar på brädan returneras metoden false och anroppas från solve() metoden.
+                    {
+
+                        return true;
+
+                    }
                 }
+
             }
-            Sudoku game2 = new Sudoku(guess);
-            return guess;
-            
-            
-                      /*Skapa metod för att lägga in en ny siffra i sudokun, från tryvaluesList.
-                       * denna görs om till en sträng som körs igenom solve-metoden.
-                       * om solve-metoden inte hittar någon ny lösning ska programmet gå tillbaka till denna metod
-                       * och lägga till en ny gissning från listan
-                      */
-        }
 
-        private string AlternativeBoardString(List<char> AlternativeBoard)
-        {
-            string AlternativeString = "";
+            List<char> guessPossibleValues = FindSolutions(guessRow, guessCol);
 
-            foreach (var item in AlternativeBoard)
+            while (guessPossibleValues.Count > 0)      // Om listan innehåller mer än än lösning kör koden nedanför.
             {
-                AlternativeString += item; //för att lägga ihop varje del i char-Listan till en enda sträng
+                // Gissa på nästa möjliga index( värde/lösning) i listan och sätter ner det i nuvarande cell.
+                char guess = guessPossibleValues[0];
+                sudokuBoard[guessRow, guessCol] = guess;
+
+                //Här skapas en ny sudokubräda med orginal brädan som mall och görs till en bool om brädan är lösbar.             
+                Sudoku guessSudoku = new Sudoku(sudokuBoard);
+                bool result = guessSudoku.Solve();
+
+                if (result)    //Om sudokut är löst så kopiera brädan till orginalbrädan och metoden returnerar true.
+                {
+                    sudokuBoard = guessSudoku.sudokuBoard;
+                    return true;
+                }
+
+                // Sudokut är inte löst
+                guessPossibleValues.Remove(guess);     // Ta bort "siffran" guess listan över möjliga gisningar och fortsätter att gissa.
+                
             }
 
-            return AlternativeString;
+            return false;// Det går inte att lösa sudokut med algoritmen.. metoden returnerar false
         }
+
     }
+            
+        
+
+
+
 }
+
+
