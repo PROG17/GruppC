@@ -237,20 +237,16 @@ namespace SudokuC
             return true;
         }
 
-        // Denna metod försöker lösa sudokut med hjälp av fylla de celler som endast har ett möjligt värde.
-        // och returnerar en bool som anger om det gick bra att lösa sudokut 
-        //private string punkt = "| ? ? ? | ? ? ?| ? ? ? |";
-
-
-
+      
         // Denna metod skriver ut Sudokut i konsolen med "Suduko design"
         public void PrintBoard()
         {
             Console.WriteLine("   SUDUKO SOLVER 2000     ");
             Console.WriteLine(@"¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
-            for (int row = 0; row < 9; row++)
+            
+            for (int r = 0; r < 9; r++)
             {
-                if (row % 3 == 0)
+                if (r % 3 == 0)
                 {
                     for (int i = 0; i < 25; i++)
                     {
@@ -260,13 +256,13 @@ namespace SudokuC
                     Console.WriteLine();
                 }
 
-                for (int column = 0; column < 9; column++)
+                for (int c = 0; c < 9; c++)
                 {
-                    if (column % 3 == 0)
+                    if (c % 3 == 0)
                     {
                         Console.Write("| ");
                     }
-                    Console.Write(sudukoBoard[row, column] + " ");
+                    Console.Write(sudukoBoard[r, c] + " ");
                 }
 
                 Console.Write("|");
