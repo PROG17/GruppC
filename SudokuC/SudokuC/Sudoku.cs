@@ -135,8 +135,8 @@ namespace SudokuC
         public bool Solve()
         {
 
-            bool solvable = true;
-
+            bool solvable;
+        
             do
             {
                 solvable = false;
@@ -151,9 +151,9 @@ namespace SudokuC
                         {
                             List<int> logicalValues = FindPossibleValues(r, c);
 
-                            if (logicalValues.Count == 1) // Om exakt en siffra är möjlig i cellen 
+                            if (logicalValues.Count == 1) // Om det finns en lösning för cellen
                             {
-                                // Skriv in den enda möjliga siffran i cellen
+                                // Skriv in det enda möjliga värdet i cellen.
                                 sudukoBoard[r, c] = logicalValues[0];
                                 solvable = true;
                             }
@@ -161,7 +161,7 @@ namespace SudokuC
                     }
                 }
 
-            } while (solvable); // Fortsätt i loopen om minst en siffra blev inskriven          
+            } while (solvable);          
 
             // Kontrollera om sudokut är löst ( solve returnerar true om det är fallet).
             if (CheckIfSolved())
