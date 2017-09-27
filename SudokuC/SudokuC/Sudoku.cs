@@ -30,7 +30,7 @@ namespace SudokuC
         }
 
         // Konstruktor, skriv in alla givna siffror i arrayen. Den skapades i syfte för att kunna skapa en kopia av arrayen i RecursiveSolve().
-        public Sudoku(int[,] sudokuCells)
+        public Sudoku(int[,] recursiveBoard)
         {
             
 
@@ -38,7 +38,7 @@ namespace SudokuC
             {
                 for (int c = 0; c < 9; c++)
                 {
-                    sudukoBoard[r, c] = sudokuCells[r, c];
+                    sudukoBoard[r, c] = recursiveBoard[r, c];
                 }
             }
 
