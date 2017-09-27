@@ -194,7 +194,7 @@ namespace SudokuC
                 }
             }
 
-            if (CheckIfSolved()) //finns det några noll kvar? om ja så är brädan löst = true!
+            if (CheckIfSolved()) //finns det några noll kvar? om ja så är brädan löst och får tillbaka till Solve()!
             {
                 return false;
             }
@@ -208,12 +208,12 @@ namespace SudokuC
                 sudokuBoard[recRow, recCol] = recValue;
 
                 // Försök lösa Sudokut med den nya gissningen med rekursion, skapar en kopia av brädet och testar att lösa det med solve() metoden.             
-                Sudoku guessSudoku = new Sudoku(sudokuBoard);
-                guessSudoku.Solve();
+                Sudoku recursiveSudoku = new Sudoku(sudokuBoard);
+                recursiveSudoku.Solve();
 
-                if (guessSudoku.Solve()) // Sudokut är löst, kopiera den rätta lösningen och returnera true  
+                if (recursiveSudoku.Solve()) // Sudokut är löst, kopiera den rätta lösningen och returnera true  
                 {
-                    sudokuBoard = guessSudoku.sudokuBoard;
+                    sudokuBoard = recursiveSudoku.sudokuBoard; // Gör en kopia till orginalbrädan
                     return true;
                 }
 
@@ -238,7 +238,7 @@ namespace SudokuC
         }
 
       
-        // Denna metod skriver ut Sudokut i konsolen med "Suduko design"
+        // Denna metod skriver ut Sudokut i konsolen med "Sudukodesign"
         public void PrintBoard()
         {
             Console.WriteLine("   SUDUKO SOLVER 2000     ");
