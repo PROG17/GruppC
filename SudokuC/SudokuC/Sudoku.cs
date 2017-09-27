@@ -7,68 +7,154 @@ using System.Threading.Tasks;
 
 namespace SudokuC
 {
-    public class Sudoku
+    class Sudoku
     {
-        public char[,] sudokuBoard; //Här deklarerar vi en en tvådimensionell array av typen char och anger storleken på denna.
 
+        // En tvådimisionell array som har 9x9(se metoderna nedanför) som kommer vara programmets sudukobräda
 
+        private int[,] sudukoBoard = new int[9,9];
 
-        //Metod med samma namn som klassen(Konstruktor) som skapar en tvådimensionell Array("sudokuBoard") av en string som den hämtar in via en inparameter.
+        // Konstruktor, som skapar en tvådimensionell Array("sudokuBoard") av en string som den hämtar in via en inparameter.
         public Sudoku(string board)
         {
-            sudokuBoard = new char[9, 9];
-
-            int count1 = 0; //Här skapar vi en variabel av typen int som vi använder som en räknare
-
-            for (int r = 0; r < 9; r++) //med "r" räknar vi antal rows(rader), 9 rader.
+            
+            for (int i = 0; i < sudukoBoard.Length; i++)
             {
-                for (int c = 0; c < 9; c++) // med c räknar vi antal columns(kolumner), 9 kolumner per rad).
+                int r = i / 9;
+                int c = i % 9;
+                if ((r < 9) && (c < 9))
                 {
-                    this.sudokuBoard[r, c] = (board[count1]); //Här lägger till värde på respektive element i vår tvådimensionella char arrray och värdet hämtar vi från vår string som angivits som inparameter.
-
-                    count1++; //Här ökar vi värdet på vår räknare med 1 för att hämta nästa char i vår sträng för varje gång som denna loop körs.
+                    sudukoBoard[r, c] = int.Parse(board.Substring(i, 1));
                 }
-
             }
         }
 
-        //Konstruktor som tar in en tvådimisionell array av typrn char (används vid recursionen på del 2)
-        public Sudoku(char[,] SudokuBoard)
+        // Konstruktor, skriv in alla givna siffror i arrayen. Den skapades i syfte för att kunna skapa en kopia av arrayen i RecursiveSolve().
+        public Sudoku(int[,] sudokuCells)
         {
-            sudokuBoard = new char[9, 9];
+            
 
             for (int r = 0; r < 9; r++)
             {
                 for (int c = 0; c < 9; c++)
                 {
-                    this.sudokuBoard[r, c] = SudokuBoard[r, c];
+                    sudukoBoard[r, c] = sudokuCells[r, c];
                 }
             }
 
         }
 
+      
 
-        
-        //Denna metod ska lösa vår Sudoku och den loopar igenom varje element i vår tvådimensionella array av char som heter "sudokuBoard".
-        internal bool Solve()
+   
+        //Denna metod returnerar en lista på de värden som finns i en specifik rad.
+        private List<int> CheckValuesInRow(int r)
         {
-            bool solvable;
+            List<int> valuesInRow = new List<int>();
+
+            for (int c = 0; c < 9; c++)
+            {
+                
+                if ((sudukoBoard[r, c] > 0) && (!valuesInRow.Contains(sudukoBoard[r, c])))
+                {
+                    valuesInRow.Add(sudukoBoard[r,c]);
+                }
+            }
+
+            return valuesInRow;
+        }
+
+        //Denna metod returnerar en lista på de värden som finns i en specifik kolumn.
+        private List<int> CheckValuesInCol(int c)
+        {
+            List<int> valuesInCol = new List<int>();
+
+            for (int r = 0; r < 9; r++)
+            {
+                
+                if ((sudukoBoard[r, c] > 0) && (!valuesInCol.Contains(sudukoBoard[r, c])))
+                {
+                    valuesInCol.Add(sudukoBoard[r,c]);
+                }
+            }
+
+            return valuesInCol;
+        }
+        //Denna metod returnerar en lista på de värden som finns i en specifikt block.
+
+        private List<int> CheckValuesInBlock(int r, int c)
+        {
+            List<int> valuesInBlock = new List<int>();
+
+            int R = r / 3;
+            int C = c / 3;
+
+            for (int blockRow = R * 3; blockRow < (R + 1) * 3; blockRow++)
+            {
+                for (int blockCol = C * 3; blockCol < (C + 1) * 3; blockCol++)
+                {
+                    
+                    if ((sudukoBoard[blockRow, blockCol] > 0) && (!valuesInBlock.Contains(sudukoBoard[blockRow, blockCol])))
+                    {
+                        valuesInBlock.Add(sudukoBoard[blockRow,blockCol]);
+                    }
+                }
+            }
+
+            return valuesInBlock;
+        }
+
+        private List<int> FindPossibleValues(int r, int c)
+        {
+
+            // skapar tre listor som ska ska söka efter värden i rad, col och block.
+            // Det som underlättade att skapa nya instanser av listorna i metoden var för inte behöva cleara varje gång. 
+            // vi hade ett enormt bestyr med listorna och de ville inte funka. 
+            // det var en av anledningarna till att vi valde att testa med int istället för char. För något blev riktigt fel vid komp.
+
+            List<int> rowValues = CheckValuesInRow(r);
+            List<int> colValues = CheckValuesInCol(c);
+            List<int> boxValues = CheckValuesInBlock(r, c);
+
+
+            List<int> solutions = new List<int>();
+
+            for (int i = 1; i <= 9; i++)
+            {
+                // Kollar om det finns ett värde mellan 1-9 i rad, col och block. Om det är ett värde mellan 1-9 som inte finns i de övre listorna så kommer det adderas till listan solutions.
+                if (!(rowValues.Contains(i) || colValues.Contains(i) || boxValues.Contains(i)))
+                {
+                    solutions.Add(i);
+                }
+            }
+            // returnera den nya listan med unika värden.
+            return solutions;
+        }
+
+
+        public bool Solve()
+        {
+
+            bool solvable = true;
 
             do
             {
                 solvable = false;
+
                 for (int r = 0; r < 9; r++)
                 {
                     for (int c = 0; c < 9; c++)
                     {
-                        if (sudokuBoard[r, c] == '0')   // Om cellen är tom
-                        {
-                            List<char> possibleValues = FindSolutions(r, c);
 
-                            if (possibleValues.Count == 1)    // Om exakt en siffra är möjlig i cellen 
+
+                        if (sudukoBoard[r, c] == 0) // Om cellen är tom
+                        {
+                            List<int> logicalValues = FindPossibleValues(r, c);
+
+                            if (logicalValues.Count == 1) // Om exakt en siffra är möjlig i cellen 
                             {
                                 // Skriv in den enda möjliga siffran i cellen
-                                sudokuBoard[r, c] = possibleValues[0];
+                                sudukoBoard[r, c] = logicalValues[0];
                                 solvable = true;
                             }
                         }
@@ -77,77 +163,73 @@ namespace SudokuC
 
             } while (solvable); // Fortsätt i loopen om minst en siffra blev inskriven          
 
-            // Kontrollera om sudokut är löst
+            // Kontrollera om sudokut är löst ( solve returnerar true om det är fallet).
             if (CheckIfSolved())
             {
                 return true;
-
             }
 
-            // Det gick inte att lösa sudokut med logik, så nu måste vi göra en gissning
+            // Det gick inte att lösa sudokut med logik, så nu måste vi lösa det med recursion.
             // Gissa en lösning och returnera en bool som anger om gissningen gick bra          
 
-            return GuessSolution();
-
+            return RecursiveSolve();
         }
 
-
-
-
-        private List<char> CheckRow(int r)
+        private bool RecursiveSolve()
         {
-            List<char> ValuesInRow = new List<char>();
+            //variabler skapas utanför loopen för att kunna vara tillgängliga 
+            int recRow = 0;
+            int recCol = 0;
 
-            for (int c = 0; c < 9; c++)
-            {
-                if ((sudokuBoard[r, c] != '0') && (!ValuesInRow.Contains(sudokuBoard[r, c])))
-                {
-                    ValuesInRow.Add(sudokuBoard[r, c]);
-                }
-            }
-            return ValuesInRow;
-        }
-
-        private List<char> CheckColumn(int c)
-        {
-            List<char> ValuesInColumn = new List<char>();
-
+            // Leta upp nästa tomma cell, och använd sedan den cellen för att testa ett värde.
             for (int r = 0; r < 9; r++)
             {
-                if ((sudokuBoard[r, c] != '0') && (!ValuesInColumn.Contains(sudokuBoard[r, c])))
+                for (int c = 0; c < 9; c++)
                 {
-                    ValuesInColumn.Add(sudokuBoard[r, c]);
-                }
-            }
-            return ValuesInColumn;
-        }
-
-        private List<int> GetNumbersInBoxint (int R, int C)
-        {
-            List<char> numbersInBox = new List<char>();
-
-            R = (R / 3) * 3;
-            C = (C / 3) * 3;
-
-            for (int r = 0; r < 3; r++)
-            {
-                for (int c = 0; c < 3; c++)
-                {
-                    int values = sudokuBoard[R,C];
-                    if ((sudokuBoard[R + r, C + c] != '0') && (!numbersInBox.Contains(sudokuBoard[R + r, C + c])))
+                    if (sudukoBoard[r, c] == 0)
                     {
-                        numbersInBox.Add(sudokuBoard[r ,c]);
+                        recRow = r;
+                        recCol = c;
                     }
                 }
             }
-            return numbersInBox;
+
+            if (CheckIfSolved()) //finns det några noll kvar? om ja så är brädan löst = true!
+            {
+                return false;
+            }
+
+            //skapar en ny lista från     |           denna metod               |
+            List<int> recPossibleValues = FindPossibleValues(recRow, recCol);
+            while (recPossibleValues.Count > 0) // Så länge det finns fler värden än ett i denna cell gör detta.
+            {
+                // Gissa på nästa möjliga värde för cellen
+                int recValue = recPossibleValues[0];
+                sudukoBoard[recRow, recCol] = recValue;
+
+                // Försök lösa Sudokut med den nya gissningen med rekursion, skapar en kopia av brädet och testar att lösa det med solve() metoden.             
+                Sudoku guessSudoku = new Sudoku(sudukoBoard);
+                guessSudoku.Solve();
+
+                if (guessSudoku.Solve()) // Sudokut är löst, kopiera den rätta lösningen och returnera true  
+                {
+                    sudukoBoard = guessSudoku.sudukoBoard;
+                    return true;
+                }
+
+                // Sudokut är inte löst och tar bort de felaktiga värdet och börjar om.
+                recPossibleValues.Remove(recValue); // 
+            }
+
+            return false; // Det går inte att lösa sudokut... Då finns det antaglingen ingen lösning på sudokot...
         }
 
+        //Metoden som tittar på om det finns några "0" kvar på brädet.
         private bool CheckIfSolved()
         {
-            foreach (var item in sudokuBoard)
+            foreach (var item in sudukoBoard)
             {
-                if (item == '0')
+                if (item == 0)
                 {
                     return false;
                 }
@@ -155,90 +237,55 @@ namespace SudokuC
             return true;
         }
 
-        private List<char> FindSolutions(int r, int c)
-        {
-            List<char> rowValue = CheckRow(r);
-            List<char> colValue = CheckColumn(c);
-            List<char> boxValue = CheckBlock(r, c);
+        // Denna metod försöker lösa sudokut med hjälp av fylla de celler som endast har ett möjligt värde.
+        // och returnerar en bool som anger om det gick bra att lösa sudokut 
+        //private string punkt = "| ? ? ? | ? ? ?| ? ? ? |";
 
 
-            List<char> solutions = new List<char>();
 
-            for (char i = '1'; i <= '9'; i++)
-            {
-                if (!rowValue.Contains(i) && (!colValue.Contains(i) && (!boxValue.Contains(i))))
-                {
-                    solutions.Add(i);
-               
-                }
-            }
-         
-            return solutions;
-        }
-
+        // Denna metod skriver ut Sudokut i konsolen med "Suduko design"
         public void PrintBoard()
         {
-            for (int r = 0; r < 9; r++)
+            Console.WriteLine("   SUDUKO SOLVER 2000     ");
+            Console.WriteLine(@"¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+            for (int row = 0; row < 9; row++)
             {
-                for (int c = 0; c < 9; c++)
+                if (row % 3 == 0)
                 {
-                    Console.Write(sudokuBoard[r, c] + " ");
+                    for (int i = 0; i < 25; i++)
+                    {
+                        
+                        Console.Write("-");
+                    }
+                    Console.WriteLine();
                 }
+
+                for (int column = 0; column < 9; column++)
+                {
+                    if (column % 3 == 0)
+                    {
+                        Console.Write("| ");
+                    }
+                    Console.Write(sudukoBoard[row, column] + " ");
+                }
+
+                Console.Write("|");
                 Console.WriteLine();
             }
-        }
 
-        private bool GuessSolution()
-        {
-            int guessRow = 0;
-            int guessCol = 0;
-            // Leta upp nästa tomma cell, och använd sedan den tomma cellen för hitta en möjlig lösning
-            for (int r = 0; r < 9; r++)
+            for (int i = 0; i < 25; i++)
             {
-                for (int c = 0; c < 9; c++)
-                {
-                    if (CheckIfSolved()) //Om det inte finns några nollor kvar på brädan returneras metoden false och anroppas från solve() metoden.
-                    {
-
-                        return true;
-
-                    }
-                }
-
+                Console.Write("-");
             }
-
-            List<char> guessPossibleValues = FindSolutions(guessRow, guessCol);
-
-            while (guessPossibleValues.Count > 0)      // Om listan innehåller mer än än lösning kör koden nedanför.
-            {
-                // Gissa på nästa möjliga index( värde/lösning) i listan och sätter ner det i nuvarande cell.
-                char guess = guessPossibleValues[0];
-                sudokuBoard[guessRow, guessCol] = guess;
-
-                //Här skapas en ny sudokubräda med orginal brädan som mall och görs till en bool om brädan är lösbar.             
-                Sudoku guessSudoku = new Sudoku(sudokuBoard);
-                bool result = guessSudoku.Solve();
-
-                if (result)    //Om sudokut är löst så kopiera brädan till orginalbrädan och metoden returnerar true.
-                {
-                    sudokuBoard = guessSudoku.sudokuBoard;
-                    return true;
-                }
-
-                // Sudokut är inte löst
-                guessPossibleValues.Remove(guess);     // Ta bort "siffran" guess listan över möjliga gisningar och fortsätter att gissa.
-                
-            }
-
-            return false;// Det går inte att lösa sudokut med algoritmen.. metoden returnerar false
-        }
-
-    }
             
-        
+            Console.WriteLine();
 
+            Thread.Sleep(2000);
+            Console.WriteLine("Status: [Solved]");
+            Console.WriteLine("Detta är lösningen på sudokut!");
 
+        }
+    }
 
 }
-
 
