@@ -12,19 +12,19 @@ namespace SudokuC
 
         // En tvådimisionell array som har 9x9(se metoderna nedanför) som kommer vara programmets sudukobräda
 
-        private int[,] sudukoBoard = new int[9,9];
+        private int[,] sudokuBoard = new int[9,9];
 
         // Konstruktor, som skapar en tvådimensionell Array("sudokuBoard") av en string som den hämtar in via en inparameter.
         public Sudoku(string board)
         {
             
-            for (int i = 0; i < sudukoBoard.Length; i++)
+            for (int i = 0; i < sudokuBoard.Length; i++)
             {
                 int r = i / 9;
                 int c = i % 9;
                 if ((r < 9) && (c < 9))
                 {
-                    sudukoBoard[r, c] = int.Parse(board.Substring(i, 1));
+                    sudokuBoard[r, c] = int.Parse(board.Substring(i, 1));
                 }
             }
         }
@@ -38,7 +38,7 @@ namespace SudokuC
             {
                 for (int c = 0; c < 9; c++)
                 {
-                    sudukoBoard[r, c] = recursiveBoard[r, c];
+                    sudokuBoard[r, c] = recursiveBoard[r, c];
                 }
             }
 
@@ -55,9 +55,9 @@ namespace SudokuC
             for (int c = 0; c < 9; c++)
             {
                 
-                if ((sudukoBoard[r, c] > 0) && (!valuesInRow.Contains(sudukoBoard[r, c])))
+                if ((sudokuBoard[r, c] > 0) && (!valuesInRow.Contains(sudokuBoard[r, c])))
                 {
-                    valuesInRow.Add(sudukoBoard[r,c]);
+                    valuesInRow.Add(sudokuBoard[r,c]);
                 }
             }
 
@@ -72,9 +72,9 @@ namespace SudokuC
             for (int r = 0; r < 9; r++)
             {
                 
-                if ((sudukoBoard[r, c] > 0) && (!valuesInCol.Contains(sudukoBoard[r, c])))
+                if ((sudokuBoard[r, c] > 0) && (!valuesInCol.Contains(sudokuBoard[r, c])))
                 {
-                    valuesInCol.Add(sudukoBoard[r,c]);
+                    valuesInCol.Add(sudokuBoard[r,c]);
                 }
             }
 
@@ -89,14 +89,14 @@ namespace SudokuC
             int R = r / 3;
             int C = c / 3;
 
-            for (int blockRow = R * 3; blockRow < (R + 1) * 3; blockRow++)
+            for ( r = R * 3; r< (R + 1) * 3; r++)
             {
-                for (int blockCol = C * 3; blockCol < (C + 1) * 3; blockCol++)
+                for (c = C * 3 ; c < (C + 1) * 3; c++)
                 {
                     
-                    if ((sudukoBoard[blockRow, blockCol] > 0) && (!valuesInBlock.Contains(sudukoBoard[blockRow, blockCol])))
+                    if ((sudokuBoard[r, c] > 0) && (!valuesInBlock.Contains(sudokuBoard[r, c])))
                     {
-                        valuesInBlock.Add(sudukoBoard[blockRow,blockCol]);
+                        valuesInBlock.Add(sudokuBoard[r,c]);
                     }
                 }
             }
@@ -147,14 +147,14 @@ namespace SudokuC
                     {
 
 
-                        if (sudukoBoard[r, c] == 0) // Om cellen är tom
+                        if (sudokuBoard[r, c] == 0) // Om cellen är tom
                         {
                             List<int> logicalValues = FindPossibleValues(r, c);
 
                             if (logicalValues.Count == 1) // Om det finns en lösning för cellen
                             {
                                 // Skriv in det enda möjliga värdet i cellen.
-                                sudukoBoard[r, c] = logicalValues[0];
+                                sudokuBoard[r, c] = logicalValues[0];
                                 solvable = true;
                             }
                         }
@@ -186,7 +186,7 @@ namespace SudokuC
             {
                 for (int c = 0; c < 9; c++)
                 {
-                    if (sudukoBoard[r, c] == 0)
+                    if (sudokuBoard[r, c] == 0)
                     {
                         recRow = r;
                         recCol = c;
@@ -205,15 +205,15 @@ namespace SudokuC
             {
                 // Gissa på nästa möjliga värde för cellen
                 int recValue = recPossibleValues[0];
-                sudukoBoard[recRow, recCol] = recValue;
+                sudokuBoard[recRow, recCol] = recValue;
 
                 // Försök lösa Sudokut med den nya gissningen med rekursion, skapar en kopia av brädet och testar att lösa det med solve() metoden.             
-                Sudoku guessSudoku = new Sudoku(sudukoBoard);
+                Sudoku guessSudoku = new Sudoku(sudokuBoard);
                 guessSudoku.Solve();
 
                 if (guessSudoku.Solve()) // Sudokut är löst, kopiera den rätta lösningen och returnera true  
                 {
-                    sudukoBoard = guessSudoku.sudukoBoard;
+                    sudokuBoard = guessSudoku.sudokuBoard;
                     return true;
                 }
 
@@ -227,7 +227,7 @@ namespace SudokuC
         //Metoden som tittar på om det finns några "0" kvar på brädet.
         private bool CheckIfSolved()
         {
-            foreach (var item in sudukoBoard)
+            foreach (var item in sudokuBoard)
             {
                 if (item == 0)
                 {
@@ -262,7 +262,7 @@ namespace SudokuC
                     {
                         Console.Write("| ");
                     }
-                    Console.Write(sudukoBoard[r, c] + " ");
+                    Console.Write(sudokuBoard[r, c] + " ");
                 }
 
                 Console.Write("|");
