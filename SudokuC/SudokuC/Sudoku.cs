@@ -12,12 +12,12 @@ namespace SudokuC
 
         // En tvådimisionell array som har 9x9(se metoderna nedanför) som kommer vara programmets sudukobräda
 
-        private int[,] sudokuBoard = new int[9,9];
+        private int[,] sudokuBoard = new int[9, 9];
 
         // Konstruktor, som skapar en tvådimensionell Array("sudokuBoard") av en string som den hämtar in via en inparameter.
         public Sudoku(string board)
         {
-            
+
             for (int i = 0; i < sudokuBoard.Length; i++)
             {
                 int r = i / 9;
@@ -32,7 +32,7 @@ namespace SudokuC
         // Konstruktor, skriv in alla givna siffror i arrayen. Den skapades i syfte för att kunna skapa en kopia av arrayen i RecursiveSolve().
         public Sudoku(int[,] recursiveBoard)
         {
-            
+
 
             for (int r = 0; r < 9; r++)
             {
@@ -44,9 +44,9 @@ namespace SudokuC
 
         }
 
-      
 
-   
+
+
         //Denna metod returnerar en lista på de värden som finns i en specifik rad.
         private List<int> CheckValuesInRow(int r)
         {
@@ -54,10 +54,10 @@ namespace SudokuC
 
             for (int c = 0; c < 9; c++)
             {
-                
+
                 if ((sudokuBoard[r, c] > 0) && (!valuesInRow.Contains(sudokuBoard[r, c])))
                 {
-                    valuesInRow.Add(sudokuBoard[r,c]);
+                    valuesInRow.Add(sudokuBoard[r, c]);
                 }
             }
 
@@ -71,10 +71,10 @@ namespace SudokuC
 
             for (int r = 0; r < 9; r++)
             {
-                
+
                 if ((sudokuBoard[r, c] > 0) && (!valuesInCol.Contains(sudokuBoard[r, c])))
                 {
-                    valuesInCol.Add(sudokuBoard[r,c]);
+                    valuesInCol.Add(sudokuBoard[r, c]);
                 }
             }
 
@@ -89,14 +89,14 @@ namespace SudokuC
             int R = r / 3;
             int C = c / 3;
 
-            for ( r = R * 3; r< (R + 1) * 3; r++)
+            for (r = R * 3; r < (R + 1) * 3; r++)
             {
-                for (c = C * 3 ; c < (C + 1) * 3; c++)
+                for (c = C * 3; c < (C + 1) * 3; c++)
                 {
-                    
+
                     if ((sudokuBoard[r, c] > 0) && (!valuesInBlock.Contains(sudokuBoard[r, c])))
                     {
-                        valuesInBlock.Add(sudokuBoard[r,c]);
+                        valuesInBlock.Add(sudokuBoard[r, c]);
                     }
                 }
             }
@@ -131,97 +131,68 @@ namespace SudokuC
             return solutions;
         }
 
-
         public bool Solve()
         {
+            bool madeChanges = false;
+            int C = 0;
+            int R = 0;
 
-            bool solvable;
-        
             do
             {
-                solvable = false;
-
+                madeChanges = false;
                 for (int r = 0; r < 9; r++)
                 {
                     for (int c = 0; c < 9; c++)
                     {
 
 
-                        if (sudokuBoard[r, c] == 0) // Om cellen är tom
+                        if (sudokuBoard[r, c] == 0)
                         {
                             List<int> logicalValues = FindPossibleValues(r, c);
 
-                            if (logicalValues.Count == 1) // Om det finns en lösning för cellen
+                            if (logicalValues.Count == 1)
                             {
-                                // Skriv in det enda möjliga värdet i cellen.
                                 sudokuBoard[r, c] = logicalValues[0];
-                                solvable = true;
+                                madeChanges = true;
+
                             }
+
+                            else
+                            {
+                                C = c;
+                                R = r;
+                            }
+
                         }
                     }
                 }
+            } while (madeChanges);
 
-            } while (solvable);          
-
-            // Kontrollera om sudokut är löst ( solve returnerar true om det är fallet).
-            if (CheckIfSolved())
+            if (!CheckIfSolved())
             {
-                return true;
-            }
 
-            // Det gick inte att lösa sudokut med logik, så nu måste vi lösa det med recursion.
-            // Gissa en lösning och returnera en bool som anger om gissningen gick bra          
 
-            return RecursiveSolve();
-        }
+                List<int> recursiveValues = FindPossibleValues(R, C);
 
-        private bool RecursiveSolve()
-        {
-            //variabler skapas utanför loopen för att kunna vara tillgängliga 
-            int recRow = 0;
-            int recCol = 0;
-
-            // Leta upp nästa tomma cell, och använd sedan den cellen för att testa ett värde.
-            for (int r = 0; r < 9; r++)
-            {
-                for (int c = 0; c < 9; c++)
+                for (int i = 0; i < recursiveValues.Count; i++)
                 {
-                    if (sudokuBoard[r, c] == 0)
+                    sudokuBoard[R, C] = recursiveValues[i];
+                    Sudoku game = new Sudoku(sudokuBoard);
+                    var isSoleved = game.Solve();
+                    if (!isSoleved) ////
                     {
-                        recRow = r;
-                        recCol = c;
+                        continue;
+                    }
+                    else
+                    {
+                        sudokuBoard = game.sudokuBoard;
+                        break;
                     }
                 }
+
             }
 
-            if (CheckIfSolved()) //finns det några noll kvar? om ja så är brädan löst och får tillbaka till Solve()!
-            {
-                return false;
-            }
-
-            //skapar en ny lista från     |           denna metod               |
-            List<int> recPossibleValues = FindPossibleValues(recRow, recCol);
-            while (recPossibleValues.Count > 0) // Så länge det finns fler värden än ett i denna cell gör detta.
-            {
-                // Gissa på nästa möjliga värde för cellen
-                int recValue = recPossibleValues[0];
-                sudokuBoard[recRow, recCol] = recValue;
-
-                // Försök lösa Sudokut med den nya gissningen med rekursion, skapar en kopia av brädet och testar att lösa det med solve() metoden.             
-                Sudoku recursiveSudoku = new Sudoku(sudokuBoard);
-                recursiveSudoku.Solve();
-
-                if (recursiveSudoku.Solve()) // Sudokut är löst, kopiera den rätta lösningen och returnera true  
-                {
-                    sudokuBoard = recursiveSudoku.sudokuBoard; // Gör en kopia till orginalbrädan
-                    return true;
-                }
-
-                // Sudokut är inte löst och tar bort de felaktiga värdet och börjar om.
-                recPossibleValues.Remove(recValue); // 
-            }
-
-            return false; // Det går inte att lösa sudokut... Då finns det antaglingen ingen lösning på sudokot...
+            return CheckIfSolved();
         }
 
         //Metoden som tittar på om det finns några "0" kvar på brädet.
@@ -237,20 +208,20 @@ namespace SudokuC
             return true;
         }
 
-      
+
         // Denna metod skriver ut Sudokut i konsolen med "Sudukodesign"
         public void PrintBoard()
         {
             Console.WriteLine("   SUDUKO SOLVER 2000     ");
             Console.WriteLine(@"¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
-            
+
             for (int r = 0; r < 9; r++)
             {
                 if (r % 3 == 0)
                 {
                     for (int i = 0; i < 25; i++)
                     {
-                        
+
                         Console.Write("-");
                     }
                     Console.WriteLine();
@@ -273,7 +244,7 @@ namespace SudokuC
             {
                 Console.Write("-");
             }
-            
+
             Console.WriteLine();
 
             Thread.Sleep(2000);
@@ -281,7 +252,11 @@ namespace SudokuC
             Console.WriteLine("Detta är lösningen på sudokut!");
 
         }
-    }
 
+
+
+    }
 }
+
+
 
