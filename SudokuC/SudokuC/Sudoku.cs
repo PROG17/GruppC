@@ -183,11 +183,12 @@ namespace SudokuC
                     {
                         continue;
                     }
-                    else
+                    else 
                     {
                         sudokuBoard = game.sudokuBoard;
                         break;
                     }
+                    
                 }
 
             }
@@ -215,6 +216,7 @@ namespace SudokuC
             Console.WriteLine("    SUDUKOSOLVER 2000     ");
             Console.WriteLine(@"¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
 
+            
             for (int r = 0; r < 9; r++)
             {
                 if (r % 3 == 0)
@@ -247,10 +249,20 @@ namespace SudokuC
 
             Console.WriteLine();
 
-            Thread.Sleep(2000);
-            Console.WriteLine("Status: [Solved]");
-            Console.WriteLine("Detta är lösningen på sudokut!");
+            if (!CheckIfSolved())
+            {
+                Thread.Sleep(2000);
+                Console.WriteLine("Status: [Unsolved]");
+                Console.WriteLine("Det gick inte att lösa detta sudoku...");
 
+            }
+            else
+            {
+                Thread.Sleep(2000);
+                Console.WriteLine("Status: [Solved]");
+                Console.WriteLine("Detta är lösningen på sudokut!");
+            }
+          
         }
 
     }
