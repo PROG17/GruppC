@@ -29,7 +29,7 @@ namespace SudokuC
             }
         }
 
-        // Konstruktor, skriv in alla givna siffror i arrayen. Den skapades i syfte för att kunna skapa en kopia av arrayen i RecursiveSolve().
+        // Konstruktor, skriv in alla givna siffror i arrayen. Den skapades i syfte för att kunna skapa en kopia av arrayen i Solve().
         public Sudoku(int[,] recursiveBoard)
         {
 
@@ -179,7 +179,7 @@ namespace SudokuC
                     sudokuBoard[R, C] = recursiveValues[i];
                     Sudoku game = new Sudoku(sudokuBoard);
                     var isSoleved = game.Solve();
-                    if (!isSoleved) ////
+                    if (!isSoleved) 
                     {
                         continue;
                     }
@@ -212,7 +212,7 @@ namespace SudokuC
         // Denna metod skriver ut Sudokut i konsolen med "Sudukodesign"
         public void PrintBoard()
         {
-            Console.WriteLine("   SUDUKO SOLVER 2000     ");
+            Console.WriteLine("    SUDUKOSOLVER 2000     ");
             Console.WriteLine(@"¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
 
             for (int r = 0; r < 9; r++)
@@ -252,8 +252,6 @@ namespace SudokuC
             Console.WriteLine("Detta är lösningen på sudokut!");
 
         }
-
-
 
     }
 }
